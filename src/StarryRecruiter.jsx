@@ -381,7 +381,8 @@ function Pip({ mood = "idle", size = 52 }) {
 }
 
 /* ---------- shared UI ---------- */
-function Win({ title, tone = "", dots = true, children, style, bodyStyle }) {
+export { STYLES, Flower, Pip };
+export function Win({ title, tone = "", dots = true, children, style, bodyStyle }) {
   return (
     <div className="win" style={style}>
       <div className={"win-bar " + tone}>{title}{dots && <span className="win-dots"><span>_</span><span>▢</span><span>x</span></span>}</div>
@@ -398,7 +399,7 @@ function Modal({ title, tone = "grape", onClose, children, wide }) {
       </div>
     </div>);
 }
-const Field = ({ label, children }) => <div className="field"><label className="label">{label}</label>{children}</div>;
+export const Field = ({ label, children }) => <div className="field"><label className="label">{label}</label>{children}</div>;
 function BloomPicker({ value, onChange }) {
   return <div className="row gap8 wrap">{BLOOMS.map((b) => <button key={b.id} className={"swatch" + (value === b.id ? " on" : "")} style={{ background: b.hex }} onClick={() => onChange(b.id)} title={b.id} />)}</div>;
 }
