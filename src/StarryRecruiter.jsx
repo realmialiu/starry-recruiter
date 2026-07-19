@@ -12,11 +12,14 @@ import {
    the brightest stars of all (XP). Persists per save-file via window.storage
    with an in-memory fallback so it never crashes. */
 
-/* ---------- storage ---------- */
-const mem = {};
+/* ---------- storage ----------
+   Persists to localStorage via the centralized storage service, namespaced
+   per logged-in user. Kept as an async-looking interface since all call
+   sites already `await` these calls. */
+import { storage } from "./services/storage";
 const store = {
-  async get(k) { try { const r = await localStorage; return r ? JSON.parse(r.value) : null; } catch (e) { return k in mem ? mem[k] : null; } },
-  async set(k, v) { mem[k] = v; try { await localStorage; } catch (e) {} },
+  async get(k) { return storage.get(k, null); },
+  async set(k, v) { storage.set(k, v); },
 };
 
 /* ---------- id + date utils ---------- */
