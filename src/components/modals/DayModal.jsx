@@ -1,7 +1,7 @@
 import { Calendar as CalIcon, Plus } from "lucide-react";
 import { parseYMD, sameDay } from "../../utils/dates";
 import { expandEvents } from "../../utils/recurrence";
-import { TRACKS } from "../../data/tracks";
+import { useTracks } from "../../context/TracksContext";
 import { bloomHex } from "../../data/blooms";
 import { catOf } from "../../data/categories";
 import Modal from "../ui/Modal";
@@ -11,6 +11,7 @@ import { fmtTime } from "../../utils/dates";
 
 /* ---------- day detail ---------- */
 export default function DayModal({ date, data, setModal }) {
+  const { tracks } = useTracks();
   const d = parseYMD(date);
   const evs = expandEvents(data.events, d, d).filter((o) => sameDay(o.date, d)).sort((a, b) => ((a.ev.start || "") < (b.ev.start || "") ? -1 : 1));
   const drops = data.windows.filter((w) => w.actual === date || w.expected === date || w.start === date);
@@ -26,9 +27,9 @@ export default function DayModal({ date, data, setModal }) {
             </div>); })}
           {drops.map((w, i) => (
             <div key={"w" + i} className="list-row" onClick={() => setModal({ type: "window", data: w })}>
-              <Flower shape={w.actual === date ? "bloom" : "sprout"} color={TRACKS[w.track]?.color} size={20} dim={w.actual !== date} />
+              <Flower shape={w.actual === date ? "bloom" : "sprout"} color={tracks[w.track]?.color} size={20} dim={w.actual !== date} />
               <div className="grow" style={{ minWidth: 0 }}><div style={{ fontWeight: 700 }}>{w.company}</div><div className="faint mono" style={{ fontSize: 13 }}>{w.actual === date ? "opens" : "expected"}{w.program ? " · " + w.program : ""}</div></div>
-              <span className="chip" style={{ background: TRACKS[w.track].soft, color: TRACKS[w.track].color, fontSize: 11 }}>{TRACKS[w.track].short}</span>
+              <span className="chip" style={{ background: tracks[w.track]?.soft, color: tracks[w.track]?.color, fontSize: 11 }}>{tracks[w.track]?.short}</span>
             </div>))}
         </div>}
       <button className="pbtn pink" style={{ width: "100%", justifyContent: "center" }} onClick={() => setModal({ type: "event", data: { date } })}><Plus size={15} /> Add a star on this day</button>

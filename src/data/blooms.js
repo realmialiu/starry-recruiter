@@ -5,3 +5,4 @@ export const BLOOMS = [
   { id: "yellow", hex: "#F3C64E" }, { id: "mint", hex: "#7FC98E" },
 ];
 export const bloomHex = (id) => (BLOOMS.find((b) => b.id === id) || BLOOMS[0]).hex;
+export const bloomIdFromHex = (hex) => (BLOOMS.find((b) => b.hex.toLowerCase() === (hex || "").toLowerCase()) || BLOOMS[0]).id;

@@ -27,9 +27,11 @@ const store = {
 
 import { uid, ymd, today, addDays, parseYMD } from "./utils/dates";
 import { seedTimelines } from "./data/timelines";
+import { seedTracks } from "./data/tracks";
 import { rankFor } from "./data/gamification";
 import { XP } from "./data/gamification";
 import { STYLES } from "./styles/starryStyles";
+import { TracksProvider } from "./context/TracksContext";
 
 import Flower from "./components/sprites/Flower";
 import Pip from "./components/sprites/Pip";
@@ -53,6 +55,7 @@ import SimpleLinkModal from "./components/modals/SimpleLinkModal";
 import TaskModal from "./components/modals/TaskModal";
 import PhaseModal from "./components/modals/PhaseModal";
 import DayModal from "./components/modals/DayModal";
+import TrackModal from "./components/modals/TrackModal";
 
 /* Re-exported for src/pages/Login.jsx and src/pages/SignUp.jsx, which reuse
    the pixel-window styling & shared UI primitives outside the app shell. */
@@ -71,7 +74,7 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [toasts, setToasts] = useState([]);
   const dTimer = useRef(null), pTimer = useRef(null);
-  const ensureTL = (d) => ({ ...d, timelines: d.timelines || seedTimelines() });
+  const ensureTL = (d) => ({ ...d, timelines: d.timelines || seedTimelines(), tracks: d.tracks || seedTracks() });
 
   const pushToast = (ico, title, sub) => { const id = uid(); setToasts((t) => [...t, { id, ico, title, sub }]); setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3400); };
 
@@ -120,6 +123,22 @@ export default function App() {
   const toggleTask = (t) => { const done = !t.done; upsert("tasks", { ...t, done }); if (done) award(XP.task, "✓", "Quest complete"); };
   const advanceStage = (id, stage) => { const co = data.companies.find((c) => c.id === id); update("companies", data.companies.map((x) => x.id === id ? { ...x, stage } : x)); if (co && co.stage !== stage) { if (stage === "Offer") award(XP.offer, "🌟", "You landed it — brightest star!"); else if (["Superday / Final", "1st Round", "OA / HireVue", "Applied"].includes(stage)) award(XP.stage, "✨", `Rose to ${stage}`); } };
 
+  const slugify = (name) => name.trim().replace(/[^a-zA-Z0-9]+/g, "") || "Track";
+  const uniqueKey = (base, existing) => { let k = base, i = 2; while (existing[k]) { k = base + i; i++; } return k; };
+  const addTrack = (info) => setData((d) => { const tracks = { ...(d.tracks || seedTracks()) }; const key = uniqueKey(slugify(info.name), tracks); tracks[key] = { name: info.name, short: info.short, color: info.color, soft: info.soft }; return { ...d, tracks }; });
+  const renameTrack = (key, info) => setData((d) => { const tracks = { ...(d.tracks || seedTracks()) }; if (!tracks[key]) return d; tracks[key] = { ...tracks[key], ...info }; return { ...d, tracks }; });
+  const deleteTrack = (key) => {
+    setData((d) => {
+      const tracks = { ...(d.tracks || seedTracks()) };
+      if (Object.keys(tracks).length <= 1 || !tracks[key]) return d;
+      delete tracks[key];
+      const fallback = Object.keys(tracks)[0];
+      const timelines = { ...(d.timelines || seedTimelines()) }; delete timelines[key];
+      const swap = (arr) => arr.map((x) => (x.track === key ? { ...x, track: fallback } : x));
+      return { ...d, tracks, timelines, companies: swap(d.companies), windows: swap(d.windows), focus: swap(d.focus) };
+    });
+    setProfile((p) => { const list = (p.tracks || []).filter((t) => t !== key); return { ...p, tracks: list.length ? list : Object.keys((data.tracks || seedTracks())).filter((k) => k !== key) }; });
+  };
   const setTimelines = (track, phases) => setData((d) => ({ ...d, timelines: { ...(d.timelines || seedTimelines()), [track]: phases } }));
   const upsertPhase = (track, phase) => setData((d) => { const tl = { ...(d.timelines || seedTimelines()) }; const arr = [...(tl[track] || [])]; const i = arr.findIndex((x) => x.id === phase.id); tl[track] = i === -1 ? [...arr, phase] : arr.map((x) => x.id === phase.id ? phase : x); return { ...d, timelines: tl }; });
   const removePhase = (track, id) => setData((d) => { const tl = { ...(d.timelines || seedTimelines()) }; tl[track] = (tl[track] || []).filter((x) => x.id !== id); return { ...d, timelines: tl }; });
@@ -135,12 +154,15 @@ export default function App() {
   const exportSave = () => { try { const payload = { app: "StarryRecruiter", version: 1, exportedAt: new Date().toISOString(), profile, data }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `starry-${(profile?.name || "save").replace(/\\s+/g, "-").toLowerCase()}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1200); pushToast("💾", "Backup saved", "downloaded a .json"); } catch (e) { pushToast("⚠️", "Export failed", "try again"); } };
   const importSave = (obj) => { if (!obj || typeof obj !== "object" || !obj.data) { pushToast("⚠️", "Import failed", "not a valid backup"); return; } setData(ensureTL({ ...BLANK, ...obj.data })); if (obj.profile) setProfile((p) => ({ ...p, ...obj.profile, id: p.id })); pushToast("📥", "Backup loaded", "your sky is restored"); };
 
+  const trackCtx = { tracks: data.tracks || seedTracks(), addTrack, renameTrack, deleteTrack };
+
   if (!loaded) return <div className="gr" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}><style>{STYLES}</style><div style={{ textAlign: "center" }}><Pip size={64} /><div className="pixel spark" style={{ fontSize: 11, marginTop: 10 }}>LOADING...</div></div></div>;
-  if (!profile) return <Onboarding profiles={profiles} onCreate={createProfile} onPick={pickProfile} />;
+  if (!profile) return <TracksProvider value={trackCtx}><Onboarding profiles={profiles} onCreate={createProfile} onPick={pickProfile} /></TracksProvider>;
 
   const NAV = [["home", "Sky", Home], ["roster", "Roster", Building2], ["chats", "Chats", Coffee], ["guide", "Guide", Compass], ["shed", "Files", FileText], ["me", "Me", Star]];
 
   return (
+    <TracksProvider value={trackCtx}>
     <div className="gr">
       <style>{STYLES}</style>
       <div className="shell">
@@ -180,5 +202,7 @@ export default function App() {
       {modal?.type === "task" && <TaskModal data={modal.data} onSave={(f) => { upsert("tasks", f); setModal(null); }} onDelete={(id) => { remove("tasks", id); setModal(null); }} onClose={() => setModal(null)} />}
       {modal?.type === "day" && <DayModal date={modal.date} data={data} setModal={setModal} />}
       {modal?.type === "phase" && <PhaseModal data={modal.data} onSave={(track, phase) => { upsertPhase(track, phase); setModal(null); }} onDelete={(track, id) => { removePhase(track, id); setModal(null); }} onClose={() => setModal(null)} />}
-    </div>);
+      {modal?.type === "track" && <TrackModal data={modal.data} canDelete={Object.keys(data.tracks || seedTracks()).length > 1} onSave={(key, info) => { if (key) renameTrack(key, info); else addTrack(info); setModal(null); }} onDelete={(key) => { deleteTrack(key); setModal(null); }} onClose={() => setModal(null)} />}
+    </div>
+    </TracksProvider>);
 }

@@ -1,11 +1,12 @@
 import { Pin, Sparkles } from "lucide-react";
 import { parseYMD, endOfMonth, daysInMonth } from "../../utils/dates";
 import { packLanes } from "../../utils/recurrence";
-import { TRACKS } from "../../data/tracks";
+import { useTracks } from "../../context/TracksContext";
 import { bloomHex } from "../../data/blooms";
 
 /* ---------- garden beds (drop windows + focus ranges) ---------- */
 export default function GardenBeds({ monthStart, windows, focus, onWin, onFocus }) {
+  const { tracks } = useTracks();
   const mEnd = endOfMonth(monthStart); const total = daysInMonth(monthStart);
   const build = (arr, kind) => packLanes(arr.map((x) => {
     const s = parseYMD(x.start), e = parseYMD(x.end);
@@ -19,7 +20,7 @@ export default function GardenBeds({ monthStart, windows, focus, onWin, onFocus 
       <div className="beds-title">{label === "win" ? <><Pin size={10} /> APPLICATION DROPS</> : <><Sparkles size={10} /> WHAT TO FOCUS ON</>}</div>
       <div className="bed-lane" style={{ height: packed.laneCount * 24 }}>
         {packed.items.map((it, i) => {
-          const isWin = it.kind === "win"; const bg = isWin ? (TRACKS[it.item.track]?.color || "#9B7FE0") : bloomHex(it.item.color);
+          const isWin = it.kind === "win"; const bg = isWin ? (tracks[it.item.track]?.color || "#9B7FE0") : bloomHex(it.item.color);
           return <div key={i} className="bed-bar" onClick={() => onOpen(it.item)} title={isWin ? it.item.expectedLabel : it.item.label}
             style={{ left: (it.s / total) * 100 + "%", width: `calc(${((it.e - it.s + 1) / total) * 100}% - 4px)`, top: it.lane * 24, background: bg,
               borderTopLeftRadius: it.clipL ? 4 : 999, borderBottomLeftRadius: it.clipL ? 4 : 999, borderTopRightRadius: it.clipR ? 4 : 999, borderBottomRightRadius: it.clipR ? 4 : 999 }}>

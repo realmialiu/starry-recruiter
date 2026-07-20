@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Wand2, Plus, Bell } from "lucide-react";
 import { today, addDays, ymd, parseYMD, relDay, fmtTime } from "../../utils/dates";
 import { expandEvents } from "../../utils/recurrence";
-import { TRACKS } from "../../data/tracks";
+import { useTracks } from "../../context/TracksContext";
 import { bloomHex } from "../../data/blooms";
 import { catOf } from "../../data/categories";
 import { XP } from "../../data/gamification";
@@ -14,6 +14,7 @@ import GardenCalendar from "../calendar/GardenCalendar";
 
 /* ---------- home = the garden ---------- */
 export default function GardenHome({ data, profile, setModal, setView, toggleTask, onBulkDelete }) {
+  const { tracks } = useTracks();
   const t0 = today();
   const upcoming = useMemo(() => expandEvents(data.events, t0, addDays(t0, 120)).filter((o) => o.isStart)
     .sort((a, b) => (ymd(a.date) + (a.ev.start || "")) < (ymd(b.date) + (b.ev.start || "")) ? -1 : 1).slice(0, 5), [data.events]);
@@ -29,7 +30,7 @@ export default function GardenHome({ data, profile, setModal, setView, toggleTas
         <div>
           <div className="mono" style={{ color: "var(--ink-soft)" }}>{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</div>
           <h1>{greet}, {profile.name.split(" ")[0]} <span className="spark">⋆</span></h1>
-          <div className="muted">Class of {profile.gradClass} · {profile.tracks.map((t) => TRACKS[t].short).join(" · ")}</div>
+          <div className="muted">Class of {profile.gradClass} · {profile.tracks.filter((t) => tracks[t]).map((t) => tracks[t].short).join(" · ")}</div>
         </div>
         <div className="row gap8 wrap">
           <button className="pbtn ghost" onClick={() => setModal({ type: "smart" })}><Wand2 size={15} /> Map the sky</button>
@@ -72,9 +73,9 @@ export default function GardenHome({ data, profile, setModal, setView, toggleTas
             {drops.length === 0 ? <Empty shape="sun" title="Nothing on the radar" sub="Map the sky to add expected drops." /> :
               <div className="col gap2">{drops.slice(0, 6).map(({ w, d }) => { const conf = !!w.actual; return (
                 <div key={w.id} className="list-row" style={{ padding: "7px 9px" }} onClick={() => setModal({ type: "window", data: w })}>
-                  <Flower shape={conf ? "bloom" : "sprout"} color={TRACKS[w.track].color} size={20} dim={!conf} />
+                  <Flower shape={conf ? "bloom" : "sprout"} color={tracks[w.track]?.color} size={20} dim={!conf} />
                   <div className="grow" style={{ minWidth: 0 }}><div style={{ fontWeight: 700, fontSize: 13, color: conf ? "var(--ink)" : "var(--ink-soft)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{w.company}</div><div className="faint mono" style={{ fontSize: 13 }}>{conf ? "opens" : "expected"} · {w.expectedLabel || relDay(d)}</div></div>
-                  <span className="chip" style={{ background: TRACKS[w.track].soft, color: TRACKS[w.track].color, fontSize: 11 }}>{TRACKS[w.track].short}</span>
+                  <span className="chip" style={{ background: tracks[w.track]?.soft, color: tracks[w.track]?.color, fontSize: 11 }}>{tracks[w.track]?.short}</span>
                 </div>); })}</div>}
           </Win>
         </div>

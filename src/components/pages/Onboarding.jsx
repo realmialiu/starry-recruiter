@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, ChevronRight } from "lucide-react";
-import { TRACKS } from "../../data/tracks";
+import { useTracks } from "../../context/TracksContext";
 import { rankFor } from "../../data/gamification";
 import { STYLES } from "../../styles/starryStyles";
 import Field from "../ui/Field";
@@ -8,8 +8,9 @@ import Pip from "../sprites/Pip";
 
 /* ---------- onboarding ---------- */
 export default function Onboarding({ profiles, onCreate, onPick }) {
-  const [name, setName] = useState(""); const [grad, setGrad] = useState("2029"); const [tracks, setTracks] = useState(["IB", "Consulting", "PM"]);
-  const toggle = (t) => setTracks((p) => p.includes(t) ? p.filter((x) => x !== t) : [...p, t]);
+  const { tracks } = useTracks();
+  const [name, setName] = useState(""); const [grad, setGrad] = useState("2029"); const [selTracks, setSelTracks] = useState(Object.keys(tracks));
+  const toggle = (t) => setSelTracks((p) => p.includes(t) ? p.filter((x) => x !== t) : [...p, t]);
   return (
     <div className="gr" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 18 }}>
       <style>{STYLES}</style>
@@ -22,8 +23,8 @@ export default function Onboarding({ profiles, onCreate, onPick }) {
             <div className="row gap8" style={{ margin: "14px 0 2px", color: "var(--ink-faint)", fontSize: 12 }}><div className="grow" style={{ height: 2, background: "var(--line)" }} /> or start a new one <div className="grow" style={{ height: 2, background: "var(--line)" }} /></div></div>}
           <Field label="Your name"><input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="First name" /></Field>
           <Field label="Graduating class"><input className="input" value={grad} onChange={(e) => setGrad(e.target.value)} /></Field>
-          <Field label="Tracks you're chasing"><div className="row gap8 wrap">{Object.keys(TRACKS).map((k) => <button key={k} className="chip" style={{ padding: "7px 12px", cursor: "pointer", background: tracks.includes(k) ? TRACKS[k].color : "#fff", color: tracks.includes(k) ? "#fff" : "var(--ink-soft)" }} onClick={() => toggle(k)}>{tracks.includes(k) && <Check size={12} />} {TRACKS[k].name}</button>)}</div></Field>
-          <button className="pbtn" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!name.trim() || !tracks.length} onClick={() => onCreate({ name: name.trim(), gradClass: grad.trim() || "2029", tracks })}>Start my sky ⋆</button>
+          <Field label="Tracks you're chasing"><div className="row gap8 wrap">{Object.keys(tracks).map((k) => <button key={k} className="chip" style={{ padding: "7px 12px", cursor: "pointer", background: selTracks.includes(k) ? tracks[k].color : "#fff", color: selTracks.includes(k) ? "#fff" : "var(--ink-soft)" }} onClick={() => toggle(k)}>{selTracks.includes(k) && <Check size={12} />} {tracks[k].name}</button>)}</div></Field>
+          <button className="pbtn" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!name.trim() || !selTracks.length} onClick={() => onCreate({ name: name.trim(), gradClass: grad.trim() || "2029", tracks: selTracks })}>Start my sky ⋆</button>
           <p className="faint" style={{ fontSize: 11, textAlign: "center", marginTop: 10 }}>Saved on this device. No account needed.</p>
         </div>
       </div>

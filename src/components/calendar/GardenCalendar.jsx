@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Check, Trash2, Search, X, Moon } from "lucide-react";
 import { ymd, today, sameDay, addDays, addMonths, startOfMonth, monthMatrix, fmtTime, parseYMD, MONTHS, MON_SHORT, DOW } from "../../utils/dates";
 import { expandEvents } from "../../utils/recurrence";
-import { TRACKS } from "../../data/tracks";
+import { useTracks } from "../../context/TracksContext";
 import { bloomHex } from "../../data/blooms";
 import { CATEGORIES, catOf } from "../../data/categories";
 import Flower from "../sprites/Flower";
@@ -11,6 +11,7 @@ import GardenBeds from "./GardenBeds";
 
 /* ---------- the garden (calendar) ---------- */
 export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday }) {
+  const { tracks } = useTracks();
   const [cursor, setCursor] = useState(today());
   const [view, setView] = useState("garden");
   const [selMode, setSelMode] = useState(false);
@@ -49,12 +50,12 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
       const landed = data.companies.some((c) => c.name.toLowerCase() === (it.m.w.company || "").toLowerCase() && c.stage === "Offer");
       return (<button key={"a" + i} className="ev-chip" title={`${it.m.w.company} opens${landed ? " · landed!" : ""}`}
         onClick={(e) => { e.stopPropagation(); setModal({ type: "window", data: it.m.w }); }}>
-        <Flower shape={landed ? "sun" : "bloom"} color={landed ? "#F5D25E" : TRACKS[it.m.w.track]?.color} size={landed ? sz + 2 : sz} />
+        <Flower shape={landed ? "sun" : "bloom"} color={landed ? "#F5D25E" : tracks[it.m.w.track]?.color} size={landed ? sz + 2 : sz} />
         <span className="ev-t">{it.m.w.company}{landed ? " ✦" : ""}</span><span className="ev-sub">opens</span></button>);
     }
     return (<button key={"x" + i} className="ev-chip dim" title={`${it.m.w.company} · expected`}
       onClick={(e) => { e.stopPropagation(); setModal({ type: "window", data: it.m.w }); }}>
-      <Flower shape="sprout" color={TRACKS[it.m.w.track]?.color} size={sz} dim />
+      <Flower shape="sprout" color={tracks[it.m.w.track]?.color} size={sz} dim />
       <span className="ev-t">{it.m.w.company}</span><span className="ev-sub">exp.</span></button>);
   };
 

@@ -1,11 +1,12 @@
 import { Download, Upload, Check } from "lucide-react";
 import { rankFor, nextRank } from "../../data/gamification";
-import { TRACKS } from "../../data/tracks";
+import { useTracks } from "../../context/TracksContext";
 import Win from "../ui/Win";
 import Pip from "../sprites/Pip";
 
 /* ---------- profile ---------- */
 export default function Profile({ profile, data, setProfile, logout, exportSave, importSave }) {
+  const { tracks } = useTracks();
   const xp = profile.xp || 0; const r = rankFor(xp); const nx = nextRank(xp);
   const chats = data.chats.length, applied = data.companies.filter((c) => !["Interested", "Networking"].includes(c.stage)).length, offers = data.companies.filter((c) => c.stage === "Offer").length;
   const badges = [
@@ -22,7 +23,7 @@ export default function Profile({ profile, data, setProfile, logout, exportSave,
           <div style={{ background: "var(--blush)", border: "3px solid var(--ink)", borderRadius: 14, padding: 12 }}><Pip mood="cheer" size={78} /></div>
           <div className="grow" style={{ minWidth: 200 }}>
             <div style={{ fontFamily: "'Pixelify Sans'", fontWeight: 700, fontSize: 24 }}>{profile.name}</div>
-            <div className="muted" style={{ marginBottom: 8 }}>Class of {profile.gradClass} · {profile.tracks.map((t) => TRACKS[t].short).join(" · ")}</div>
+            <div className="muted" style={{ marginBottom: 8 }}>Class of {profile.gradClass} · {profile.tracks.filter((t) => tracks[t]).map((t) => tracks[t].short).join(" · ")}</div>
             <span className="rankpill">LV.{r.lv} {r.name.toUpperCase()}</span>
             <div className="xpbar" style={{ marginTop: 10 }}><div className="xpfill" style={{ width: (nx ? Math.round(((xp - r.at) / (nx.at - r.at)) * 100) : 100) + "%" }} /></div>
             <div className="mono" style={{ color: "var(--ink-soft)", marginTop: 3 }}>{nx ? `${xp}/${nx.at} XP · ${nx.at - xp} to ${nx.name}` : `${xp} XP · fully lit ⋆`} · ⋆ {profile.streak?.count || 0}d streak</div>
