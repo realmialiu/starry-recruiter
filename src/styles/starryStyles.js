@@ -99,7 +99,7 @@ export const STYLES = `
 .dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
 .dow{font-family:'Press Start 2P';font-size:8px;color:rgba(255,255,255,.85);text-align:center}
 .plots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.plot{position:relative;min-height:104px;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
+.plot{position:relative;height:104px;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
   background:linear-gradient(180deg, rgba(52,42,88,.34), rgba(92,76,140,.20));box-shadow:inset 0 0 14px rgba(35,26,64,.22);cursor:pointer;transition:.08s}
 .plot:hover{border-color:var(--yellow);transform:translateY(-1px)}
 .plot.out{opacity:.4}
@@ -108,12 +108,12 @@ export const STYLES = `
 .plot.today .plot-n{color:var(--ink);background:var(--pink);border-color:var(--ink)}
 .blooms{flex:1;display:flex;flex-direction:column;align-content:flex-start;gap:2px;padding-top:3px;width:100%;overflow:hidden}
 .bloom-btn{background:none;padding:0;line-height:0}
-.ev-chip{display:flex;align-items:center;gap:4px;width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding:1px 5px;border-radius:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);cursor:pointer;text-align:left;min-height:19px;transition:.05s}
+.ev-chip{display:flex;align-items:center;gap:4px;width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding:1px 5px;border-radius:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);cursor:pointer;text-align:left;height:19px;flex:0 0 auto;transition:.05s}
 .ev-chip:hover{background:rgba(255,255,255,.34);transform:translateX(1px)}
 .ev-chip.dim{opacity:.72;background:rgba(255,255,255,.07);border-style:dashed}
 .ev-chip.sel{outline:2px solid var(--yellow);background:rgba(245,210,94,.3)}
-.ev-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:11px;color:#fff;white-space:normal;word-break:break-word;overflow-wrap:break-word;overflow:hidden;text-shadow:0 1px 0 rgba(59,46,85,.45)}
-.ev-sub{font-family:'VT323';font-size:12px;color:rgba(255,255,255,.85);flex:0 0 auto}
+.ev-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(59,46,85,.45)}
+.ev-sub{font-family:'VT323';font-size:11px;color:rgba(255,255,255,.85);flex:0 0 auto}
 .more{font-family:'Pixelify Sans';font-weight:600;font-size:10.5px;color:#fff;align-self:flex-start;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);border-radius:6px;padding:1px 7px;cursor:pointer}
 .more:hover{background:rgba(255,255,255,.36)}
 .tick.sm{width:14px;height:14px;border-width:2px;border-radius:4px;flex:0 0 auto}
@@ -121,6 +121,27 @@ export const STYLES = `
 .sky-search{font-family:'Nunito';font-weight:600;font-size:13px;color:var(--ink);background:rgba(255,255,255,.94);border:2px solid var(--ink);border-radius:8px;padding:6px 10px;box-shadow:2px 2px 0 rgba(59,46,85,.4)}
 .sky-search::placeholder{color:var(--ink-soft)}
 .grass{height:20px;background:linear-gradient(180deg, rgba(255,222,150,.55), transparent);border-top:2px solid rgba(255,255,255,.4);margin-top:10px}
+
+/* full-screen expand */
+.sky.expanded{position:fixed;inset:16px;z-index:70;max-width:none;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(20,14,34,.55)}
+.sky.expanded .sky-body{flex:1;display:flex;min-height:0}
+.sky.expanded .garden-inner{flex:1;overflow-y:auto;padding-bottom:14px}
+.sky.expanded .plot{height:112px}
+.sky-side{width:200px;flex:0 0 auto;overflow-y:auto;padding:10px 12px 16px}
+.sky-side.left{border-right:2px solid rgba(255,255,255,.25)}
+.sky-side.right{border-left:2px solid rgba(255,255,255,.25)}
+.sky-side h4{font-family:'Press Start 2P';font-size:8px;color:rgba(255,255,255,.9);margin:2px 0 8px;display:flex;align-items:center;gap:5px}
+.sky-side-row{display:flex;align-items:center;gap:6px;padding:5px 4px;border-radius:7px;cursor:pointer}
+.sky-side-row:hover{background:rgba(255,255,255,.14)}
+.sky-side-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:11.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sky-side-sub{font-family:'VT323';font-size:11.5px;color:rgba(255,255,255,.8);flex:0 0 auto}
+.sky-side-empty{font-family:'VT323';font-size:13px;color:rgba(255,255,255,.7);padding:4px}
+.track-chip{display:inline-flex;align-items:center;gap:5px;font-family:'Pixelify Sans';font-weight:600;font-size:10.5px;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:2px 8px;margin:2px 3px 2px 0}
+.scrim.expand-lock{position:fixed}
+@media(max-width:1000px){
+  .sky.expanded{inset:0;border-radius:0}
+  .sky-side{display:none}
+}
 
 /* constellation lanes (drop windows + focus ranges) */
 .beds{background:rgba(59,46,85,.26);border:2px dashed rgba(255,255,255,.36);border-radius:11px;padding:8px 10px;margin-bottom:10px}
@@ -167,7 +188,7 @@ export const STYLES = `
 @media(max-width:860px){
   .shell{grid-template-columns:1fr}.side{display:none}.main{padding:16px 13px 90px}
   .two{grid-template-columns:1fr}.dash{grid-template-columns:1fr}.co-split{grid-template-columns:1fr}
-  .plot{min-height:64px}
+  .plot{height:76px}
   .tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);border-top:3px solid var(--ink);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around;z-index:40}
   .tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Pixelify Sans';font-weight:600;font-size:9.5px;color:var(--ink-faint)}
   .tabbar button.on{color:var(--grape)}

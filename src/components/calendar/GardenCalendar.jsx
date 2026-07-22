@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Check, Trash2, Search, X, Moon } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { ChevronLeft, ChevronRight, Check, Trash2, Search, X, Moon, Maximize2, Minimize2, Sparkles } from "lucide-react";
 import { ymd, today, sameDay, addDays, addMonths, startOfMonth, monthMatrix, fmtTime, parseYMD, MONTHS, MON_SHORT, DOW } from "../../utils/dates";
 import { expandEvents } from "../../utils/recurrence";
 import { useTracks } from "../../context/TracksContext";
@@ -18,6 +18,16 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
   const [sel, setSel] = useState(() => new Set());
   const [q, setQ] = useState("");
   const [catF, setCatF] = useState("all");
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const h = (e) => { if (e.key === "Escape") setExpanded(false); };
+    window.addEventListener("keydown", h);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", h); document.body.style.overflow = prevOverflow; };
+  }, [expanded]);
   const toggleSel = (id) => setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const exitSel = () => { setSelMode(false); setSel(new Set()); };
   const ql = q.trim().toLowerCase();
@@ -130,8 +140,44 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
   const title = view === "week" ? `Week of ${MON_SHORT[addDays(cursor, -cursor.getDay()).getMonth()]} ${addDays(cursor, -cursor.getDay()).getDate()}`
     : view === "list" ? "All stars" : `${MONTHS[cursor.getMonth()]} ${cursor.getFullYear()}`;
 
+  const rangeStart = view === "week" ? addDays(cursor, -cursor.getDay()) : startOfMonth(cursor);
+  const rangeEnd = view === "week" ? addDays(rangeStart, 6) : (() => { const w = monthMatrix(cursor.getFullYear(), cursor.getMonth()); return w[5][6]; })();
+
+  const sidePeriodLabel = view === "week" ? `${MON_SHORT[rangeStart.getMonth()]} ${rangeStart.getDate()}–${MON_SHORT[rangeEnd.getMonth()]} ${rangeEnd.getDate()}` : `${MONTHS[cursor.getMonth()]} ${cursor.getFullYear()}`;
+
+  const sideEvents = useMemo(() => expandEvents(data.events.filter(matchEv), rangeStart, rangeEnd)
+    .sort((a, b) => (ymd(a.date) + (a.ev.start || "")) < (ymd(b.date) + (b.ev.start || "")) ? -1 : 1), [data.events, rangeStart, rangeEnd, ql, catF]);
+
+  const sideFocus = useMemo(() => data.focus.filter((f) => { const s = parseYMD(f.start), e = parseYMD(f.end); return e >= rangeStart && s <= rangeEnd; })
+    .sort((a, b) => (a.start < b.start ? -1 : 1)), [data.focus, rangeStart, rangeEnd]);
+
+  const eventsSidePanel = () => (
+    <div className="sky-side left">
+      <h4>⋆ All events</h4>
+      {sideEvents.length === 0 ? <div className="sky-side-empty">Nothing this {view === "week" ? "week" : "month"}.</div> :
+        sideEvents.map((o, i) => (
+          <div key={i} className="sky-side-row" onClick={() => setModal({ type: "event", data: o.ev })}>
+            <Flower shape={catOf(o.ev.cat).shape} color={bloomHex(o.ev.color)} size={13} />
+            <span className="sky-side-t">{o.ev.title}</span>
+            <span className="sky-side-sub">{MON_SHORT[o.date.getMonth()]} {o.date.getDate()}</span>
+          </div>))}
+    </div>);
+
+  const focusSidePanel = () => (
+    <div className="sky-side right">
+      <h4><Sparkles size={9} /> Focus · {sidePeriodLabel}</h4>
+      {sideFocus.length === 0 ? <div className="sky-side-empty">No focus set for this period.</div> :
+        sideFocus.map((f) => (
+          <div key={f.id} className="sky-side-row" onClick={() => setModal({ type: "focus", data: f })}>
+            <span className="dot" style={{ background: bloomHex(f.color) }} />
+            <span className="sky-side-t">{f.label}</span>
+          </div>))}
+      <h4 style={{ marginTop: 14 }}>Tracks</h4>
+      <div>{Object.keys(tracks).map((k) => <span key={k} className="track-chip" style={{ background: tracks[k].color }}>{tracks[k].short}</span>)}</div>
+    </div>);
+
   return (
-    <div className="sky">
+    <div className={"sky" + (expanded ? " expanded" : "")}>
       <div className="sky-top">
         <div className="row gap8">
           <button className="icon-btn" onClick={() => setCursor(view === "week" ? addDays(cursor, -7) : addMonths(cursor, -1))}><ChevronLeft size={16} /></button>
@@ -142,6 +188,7 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
         <div className="row gap8 wrap">
           <button className={"pbtn sm " + (selMode ? "grape" : "ghost")} onClick={() => selMode ? exitSel() : setSelMode(true)}><Check size={13} /> {selMode ? "Done" : "Pick"}</button>
           <div className="seg">{[["garden", "Sky"], ["week", "Week"], ["list", "All"]].map(([k, l]) => <button key={k} className={view === k ? "on" : ""} onClick={() => { setView(k); exitSel(); }}>{l}</button>)}</div>
+          <button className="icon-btn" title={expanded ? "Exit full screen" : "Expand full screen"} onClick={() => setExpanded((v) => !v)}>{expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}</button>
         </div>
       </div>
       <div className="sky-tools">
@@ -155,8 +202,22 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
           {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select>
       </div>
-      {view === "garden" && monthGarden()}
-      {view === "week" && weekGarden()}
-      {view === "list" && listView()}
+      {expanded ? (
+        <div className="sky-body">
+          {eventsSidePanel()}
+          <div className="garden-inner-wrap" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflowY: "auto", overflowX: "hidden" }}>
+            {view === "garden" && monthGarden()}
+            {view === "week" && weekGarden()}
+            {view === "list" && listView()}
+          </div>
+          {focusSidePanel()}
+        </div>
+      ) : (
+        <>
+          {view === "garden" && monthGarden()}
+          {view === "week" && weekGarden()}
+          {view === "list" && listView()}
+        </>
+      )}
     </div>);
 }
