@@ -99,7 +99,7 @@ export const STYLES = `
 .dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
 .dow{font-family:'Press Start 2P';font-size:8px;color:rgba(255,255,255,.85);text-align:center}
 .plots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.plot{position:relative;aspect-ratio:3/2;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
+.plot{position:relative;aspect-ratio:1/1;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
   background:linear-gradient(180deg, rgba(52,42,88,.34), rgba(92,76,140,.20));box-shadow:inset 0 0 14px rgba(35,26,64,.22);cursor:pointer;transition:.08s}
 .plot:hover{border-color:var(--yellow);transform:translateY(-1px)}
 .plot.out{opacity:.4}
@@ -108,7 +108,7 @@ export const STYLES = `
 .plot.today .plot-n{color:var(--ink);background:var(--pink);border-color:var(--ink)}
 .blooms{flex:1;display:flex;flex-direction:column;align-content:flex-start;gap:2px;padding-top:3px;width:100%;overflow:hidden}
 .bloom-btn{background:none;padding:0;line-height:0}
-.ev-chip{display:flex;align-items:center;gap:4px;width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding:1px 5px;border-radius:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);cursor:pointer;text-align:left;height:19px;flex:0 0 auto;transition:.05s}
+.ev-chip{display:flex;align-items:center;gap:3px;width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding:1px 3px;border-radius:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);cursor:pointer;text-align:left;height:18px;flex:0 0 auto;transition:.05s}
 .ev-chip:hover{background:rgba(255,255,255,.34);transform:translateX(1px)}
 .ev-chip.dim{opacity:.72;background:rgba(255,255,255,.07);border-style:dashed}
 .ev-chip.sel{outline:2px solid var(--yellow);background:rgba(245,210,94,.3)}
@@ -181,7 +181,7 @@ export const STYLES = `
 .link-card:hover{transform:translateY(-1px)}
 .co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
 .co-split{display:grid;grid-template-columns:280px 1fr;gap:14px;align-items:start}
-.dash{display:grid;grid-template-columns:1.65fr 0.9fr;gap:16px}
+.dash{display:grid;grid-template-columns:1.65fr 0.9fr;gap:16px;align-items:start}
 .spark{color:var(--yellow)}
 .tabbar{display:none}
 @media(max-width:860px){

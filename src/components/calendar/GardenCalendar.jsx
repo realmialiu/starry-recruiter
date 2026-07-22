@@ -46,7 +46,7 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
     const marks = (dropByDay[ymd(d)] || []).filter((m) => matchWin(m.w));
     return [...marks.filter((m) => m.kind === "actual").map((m) => ({ kind: "actual", m })), ...evs, ...marks.filter((m) => m.kind === "expected").map((m) => ({ kind: "expected", m }))];
   };
-  const bloomFor = (it, i, sz = 15) => {
+  const bloomFor = (it, i, sz = 11) => {
     if (it.kind === "ev") {
       const c = catOf(it.o.ev.cat), seld = sel.has(it.o.ev.id);
       const sub = it.o.ev.allDay ? "" : (it.o.ev.start ? fmtTime(it.o.ev.start) : "");
@@ -108,7 +108,7 @@ export default function GardenCalendar({ data, setModal, onBulkDelete, sunToday 
           {days.map((d) => { const isT = sameDay(d, today()); const items = dayItems(d, byDay);
             return <div key={ymd(d)} className={"plot" + (isT ? " today" : "")} style={{ minHeight: 220 }} onClick={() => !selMode && setModal({ type: "event", data: { date: ymd(d) } })}>
               <div className="row between" style={{ width: "100%" }}><span className="dow" style={{ fontSize: 7 }}>{DOW[d.getDay()]}</span><span className="plot-n">{d.getDate()}</span></div>
-              <div className="blooms" style={{ alignContent: "flex-start" }}>{items.map((it, i) => bloomFor(it, i, 16))}</div>
+              <div className="blooms" style={{ alignContent: "flex-start" }}>{items.map((it, i) => bloomFor(it, i, 12))}</div>
             </div>; })}
         </div><div className="grass" />
       </div>);
