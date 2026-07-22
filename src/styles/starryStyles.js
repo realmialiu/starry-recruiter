@@ -99,7 +99,7 @@ export const STYLES = `
 .dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
 .dow{font-family:'Press Start 2P';font-size:8px;color:rgba(255,255,255,.85);text-align:center}
 .plots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.plot{position:relative;height:104px;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
+.plot{position:relative;aspect-ratio:3/2;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
   background:linear-gradient(180deg, rgba(52,42,88,.34), rgba(92,76,140,.20));box-shadow:inset 0 0 14px rgba(35,26,64,.22);cursor:pointer;transition:.08s}
 .plot:hover{border-color:var(--yellow);transform:translateY(-1px)}
 .plot.out{opacity:.4}
@@ -112,7 +112,7 @@ export const STYLES = `
 .ev-chip:hover{background:rgba(255,255,255,.34);transform:translateX(1px)}
 .ev-chip.dim{opacity:.72;background:rgba(255,255,255,.07);border-style:dashed}
 .ev-chip.sel{outline:2px solid var(--yellow);background:rgba(245,210,94,.3)}
-.ev-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(59,46,85,.45)}
+.ev-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:8px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(59,46,85,.45)}
 .ev-sub{font-family:'VT323';font-size:11px;color:rgba(255,255,255,.85);flex:0 0 auto}
 .more{font-family:'Pixelify Sans';font-weight:600;font-size:10.5px;color:#fff;align-self:flex-start;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);border-radius:6px;padding:1px 7px;cursor:pointer}
 .more:hover{background:rgba(255,255,255,.36)}
@@ -126,7 +126,6 @@ export const STYLES = `
 .sky.expanded{position:fixed;inset:16px;z-index:70;max-width:none;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(20,14,34,.55)}
 .sky.expanded .sky-body{flex:1;display:flex;min-height:0}
 .sky.expanded .garden-inner{flex:1;overflow-y:auto;padding-bottom:14px}
-.sky.expanded .plot{height:112px}
 .sky-side{width:200px;flex:0 0 auto;overflow-y:auto;padding:10px 12px 16px}
 .sky-side.left{border-right:2px solid rgba(255,255,255,.25)}
 .sky-side.right{border-left:2px solid rgba(255,255,255,.25)}
@@ -182,7 +181,7 @@ export const STYLES = `
 .link-card:hover{transform:translateY(-1px)}
 .co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
 .co-split{display:grid;grid-template-columns:280px 1fr;gap:14px;align-items:start}
-.dash{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.dash{display:grid;grid-template-columns:1.65fr 0.9fr;gap:16px}
 .spark{color:var(--yellow)}
 .tabbar{display:none}
 @media(max-width:860px){
