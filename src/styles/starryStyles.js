@@ -98,8 +98,8 @@ export const STYLES = `
 .garden-inner{padding:10px 14px 0}
 .dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
 .dow{font-family:'Press Start 2P';font-size:8px;color:rgba(255,255,255,.85);text-align:center}
-.plots{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.plot{position:relative;min-height:104px;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;
+.plots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.plot{position:relative;min-height:104px;min-width:0;max-width:100%;border:2px solid rgba(255,255,255,.42);border-radius:10px;padding:4px;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
   background:linear-gradient(180deg, rgba(52,42,88,.34), rgba(92,76,140,.20));box-shadow:inset 0 0 14px rgba(35,26,64,.22);cursor:pointer;transition:.08s}
 .plot:hover{border-color:var(--yellow);transform:translateY(-1px)}
 .plot.out{opacity:.4}
@@ -108,11 +108,11 @@ export const STYLES = `
 .plot.today .plot-n{color:var(--ink);background:var(--pink);border-color:var(--ink)}
 .blooms{flex:1;display:flex;flex-direction:column;align-content:flex-start;gap:2px;padding-top:3px;width:100%;overflow:hidden}
 .bloom-btn{background:none;padding:0;line-height:0}
-.ev-chip{display:flex;align-items:center;gap:4px;width:100%;padding:1px 5px;border-radius:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);cursor:pointer;text-align:left;min-height:19px;transition:.05s}
+.ev-chip{display:flex;align-items:center;gap:4px;width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding:1px 5px;border-radius:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);cursor:pointer;text-align:left;min-height:19px;transition:.05s}
 .ev-chip:hover{background:rgba(255,255,255,.34);transform:translateX(1px)}
 .ev-chip.dim{opacity:.72;background:rgba(255,255,255,.07);border-style:dashed}
 .ev-chip.sel{outline:2px solid var(--yellow);background:rgba(245,210,94,.3)}
-.ev-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(59,46,85,.45)}
+.ev-t{flex:1;min-width:0;font-family:'Pixelify Sans';font-weight:600;font-size:11px;color:#fff;white-space:normal;word-break:break-word;overflow-wrap:break-word;overflow:hidden;text-shadow:0 1px 0 rgba(59,46,85,.45)}
 .ev-sub{font-family:'VT323';font-size:12px;color:rgba(255,255,255,.85);flex:0 0 auto}
 .more{font-family:'Pixelify Sans';font-weight:600;font-size:10.5px;color:#fff;align-self:flex-start;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);border-radius:6px;padding:1px 7px;cursor:pointer}
 .more:hover{background:rgba(255,255,255,.36)}
