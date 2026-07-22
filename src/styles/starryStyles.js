@@ -64,14 +64,14 @@ export const STYLES = `
 .seg button.on{background:#fff;color:var(--grape);box-shadow:2px 2px 0 rgba(59,46,85,.35)}
 
 /* shell */
-.shell{display:grid;grid-template-columns:222px 1fr;min-height:100vh}
-.side{border-right:3px solid var(--ink);background:rgba(255,255,255,.72);backdrop-filter:blur(6px);padding:16px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:5px}
-.brand{display:flex;align-items:center;gap:8px;padding:4px 8px 14px}
+.shell{display:grid;grid-template-columns:166px 1fr;min-height:100vh}
+.side{border-right:3px solid var(--ink);background:rgba(255,255,255,.72);backdrop-filter:blur(6px);padding:16px 8px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:5px}
+.brand{display:flex;align-items:center;gap:8px;padding:4px 4px 14px}
 .brand .logo{font-family:'Pixelify Sans';font-weight:700;font-size:20px}
-.nav{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;font-family:'Pixelify Sans';font-weight:600;font-size:14px;color:var(--ink-soft);border:2px solid transparent}
+.nav{display:flex;align-items:center;gap:8px;padding:9px 8px;border-radius:10px;font-family:'Pixelify Sans';font-weight:600;font-size:14px;color:var(--ink-soft);border:2px solid transparent}
 .nav:hover{background:var(--paper2);color:var(--ink)}
 .nav.active{background:#fff;color:var(--grape);border-color:var(--ink);box-shadow:2px 2px 0 rgba(59,46,85,.4)}
-.main{padding:22px 26px 70px;max-width:1200px;width:100%}
+.main{padding:22px 26px 70px;max-width:1500px;width:100%}
 .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
 .pagehead h1{font-size:28px}
 
